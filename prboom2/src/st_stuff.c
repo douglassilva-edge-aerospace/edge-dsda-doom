@@ -374,6 +374,48 @@ static int cr_ammo_warning;
 static int cr_ammo_ok;
 static int cr_ammo_full;
 
+// Edge Changes
+#include <stdio.h>
+void Export_HUD_Stats_JSON(void) {
+    if (!plyr) return;
+
+    // Output file
+    const char* filename = "dsda_stats.json";
+    FILE *f = fopen(filename, "w");
+    
+    if (f) {
+        // Time measurements
+        int total_seconds = leveltime / 35;
+        int hours = total_seconds / 3600;
+        int minutes = (total_seconds % 3600) / 60;
+        int seconds = total_seconds % 60;
+
+        // Ammo related stats
+        int current_ammo = 0;
+        int max_ammo = 0;
+        ammotype_t ammo_type = weaponinfo[plyr->readyweapon].ammo;
+
+        if (ammo_type != am_noammo) {
+            current_ammo = plyr->ammo[ammo_type];
+            max_ammo = plyr->maxammo[ammo_type];
+        }
+
+        // Building json
+        fprintf(f, "{\n");
+        fprintf(f, "  \"monsters\": [%d, %d],\n", plyr->killcount, totalkills);
+        fprintf(f, "  \"secrets\": [%d, %d],\n", plyr->secretcount, totalsecret);
+        fprintf(f, "  \"items\": [%d, %d],\n", plyr->itemcount, totalitems);
+        fprintf(f, "  \"time_taken\": [%d, %d, %d],\n", hours, minutes, seconds);
+        fprintf(f, "  \"health\": %d,\n", plyr->health);
+        fprintf(f, "  \"armor\": %d,\n", plyr->armorpoints[0]); 
+        fprintf(f, "  \"ammo\": [%d, %d],\n", current_ammo, max_ammo);
+        fprintf(f, "  \"face_index\": %d\n", st_faceindex);
+        fprintf(f, "}\n");
+
+        fclose(f);
+    }
+}
+
 //
 // STATUS BAR CODE
 //
@@ -752,6 +794,11 @@ void ST_Ticker(void)
   st_randomnumber = M_Random();
   ST_updateWidgets();
   st_oldhealth = plyr->health;
+
+  // Update JSON file every 35 tics (1 second)
+  if (st_clock % 35 == 0) {
+      Export_HUD_Stats_JSON();
+  }
 }
 
 int st_palette = 0;
