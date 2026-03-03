@@ -1,0 +1,198 @@
+{
+  "Charlie": {
+    "received_at_unix": 1772109333,
+    "player_name": "Charlie",
+    "health": 0,
+    "armor": 45,
+    "face_index": 32,
+    "monsters": {
+      "killed": 4,
+      "total": 28
+    },
+    "secrets": {
+      "found": 2,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 3,
+      "total": 32
+    },
+    "ammo": {
+      "current": 25,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 58
+    }
+  },
+  "Mourrice": {
+    "received_at_unix": 1772114274,
+    "player_name": "Mourrice",
+    "health": 0,
+    "armor": 62,
+    "face_index": 41,
+    "monsters": {
+      "killed": 14,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 9,
+      "total": 32
+    },
+    "ammo": {
+      "current": 12,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 54
+    }
+  },
+  "Alice": {
+    "received_at_unix": 1772114316,
+    "player_name": "Alice",
+    "health": 0,
+    "armor": 62,
+    "face_index": 32,
+    "monsters": {
+      "killed": 14,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 9,
+      "total": 32
+    },
+    "ammo": {
+      "current": 12,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 54
+    }
+  },
+  "Joe": {
+    "received_at_unix": 1772114519,
+    "player_name": "Joe",
+    "health": 0,
+    "armor": 62,
+    "face_index": 12,
+    "monsters": {
+      "killed": 14,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 9,
+      "total": 32
+    },
+    "ammo": {
+      "current": 12,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 54
+    }
+  },
+  "Zed": {
+    "received_at_unix": 1772115073,
+    "player_name": "Zed",
+    "health": 0,
+    "armor": 10,
+    "face_index": 22,
+    "monsters": {
+      "killed": 1,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 0,
+      "total": 32
+    },
+    "ammo": {
+      "current": 5,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 10
+    }
+  },
+  "Woody": {
+    "received_at_unix": 1772115405,
+    "player_name": "Woody",
+    "health": 0,
+    "armor": 10,
+    "face_index": 0,
+    "monsters": {
+      "killed": 1,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 0,
+      "total": 32
+    },
+    "ammo": {
+      "current": 5,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 10
+    }
+  },
+  "Avatar": {
+    "received_at_unix": 1772115445,
+    "player_name": "Avatar",
+    "health": 0,
+    "armor": 10,
+    "face_index": 22,
+    "monsters": {
+      "killed": 1,
+      "total": 28
+    },
+    "secrets": {
+      "found": 0,
+      "total": 3
+    },
+    "items": {
+      "picked_up": 0,
+      "total": 32
+    },
+    "ammo": {
+      "current": 5,
+      "max": 50
+    },
+    "time_taken": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 10
+    }
+  }
+}

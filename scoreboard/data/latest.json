@@ -1,0 +1,11 @@
+{
+  "player_name": "Doug",
+  "health": 0,
+  "armor": 62,
+  "face_index": 41,
+  "monsters": { "killed": 14, "total": 28 },
+  "secrets": { "found": 0, "total": 3 },
+  "items": { "picked_up": 9, "total": 32 },
+  "ammo": { "current": 12, "max": 50 },
+  "time_taken": { "hours": 0, "minutes": 0, "seconds": 54 }
+}

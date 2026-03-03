@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scoreboard</title>
+
+  <style>
+    /* Optional: drop a Doom font file here:
+       static/doom.ttf  (or doom.woff2 etc)
+       If you don't have one yet, it will fallback to system fonts.
+    */
+    @font-face{
+    font-family: "DoomFont";
+    src: url("/static/doomed-regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+    }
+
+    .faceImg{
+    image-rendering: pixelated;   /* keep the retro pixels crisp */
+    image-rendering: crisp-edges;
+    width: auto;
+    height: 75%;                  /* scales up inside the right plate */
+    max-height: 100%;
+    aspect-ratio: 24 / 29;
+    padding-bottom: 20px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.6));
+    }
+
+    :root{
+    --bg-url: url("/static/card_bg.png");
+    --card-w: 700px;      /* how wide the single column card can be */
+    --card-h: 150px;
+    --gap: 16px;
+    --text: #f3f3f3;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:#0c0f12;
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+    }
+
+    .wrap{
+    max-width: 1400px;   /* controls total scoreboard width */
+    width: 100%;
+    margin: 0 auto;      /* <-- centers horizontally */
+    padding: 20px 24px 40px;
+    }
+
+    .header{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    .title{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+
+    .sub{
+      opacity:.75;
+      font-size:13px;
+    }
+
+    /* TWO COLUMNS */
+    .grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px; /* space between cards */
+    align-items: start;
+    }
+
+    @media (max-width: 1100px){
+    .grid{
+        grid-template-columns: 1fr;
+    }
+    }
+
+
+    /* prevent the card from stretching to the full screen */
+    .card{
+    width: min(var(--card-w), 96vw);
+    aspect-ratio: 1496 / 600;       /* size of the background card image */
+    margin: 0 auto;                 /* center in the column */
+    position:relative;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    background-image: var(--bg-url);
+    background-size: cover;
+    background-position: center;
+    border:1px solid rgba(255,255,255,.08);
+    }
+    
+    /* Light darkening so overlays pop, but keep the Doom look visible */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(0,0,0,.10));
+      pointer-events:none;
+    }
+
+    /* Three overlay regions aligned to the card image:
+       left plate, middle big plate, right face plate
+       Adjust % if your background differs slightly.
+    */
+    .leftPlate{
+      position:absolute;
+      left: 8.5%;
+      top: 18%;
+      width: 22%;
+      height: 64%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:15px;
+      padding:10px 12px;
+      z-index:2;
+    }
+
+    .midPlate{
+      position:absolute;
+      left: 32%;
+      top: 18%;
+      width: 44%;
+      height: 64%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:6px;
+      padding:10px 12px 0px 8px;
+      z-index:2;
+    }
+
+    .rightPlate{
+      position:absolute;
+      left: 72%;
+      top: 18%;
+      width: 22%;
+      height: 64%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding:10px 8px;
+      z-index:2;
+    }
+
+    .rank{
+      font-family: "DoomFont", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      font-size: 34px;
+      letter-spacing: .04em;
+      text-shadow: 0 2px 10px rgba(0,0,0,.55);
+      line-height:1;
+    }
+
+    .name{
+      font-size: 14px;
+      opacity:.85;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+
+    .row{
+    display:grid;
+    grid-template-columns: auto auto; /* no 1fr stretching */
+    justify-content: start;
+    column-gap: 18px;
+    align-items: baseline;
+    margin: 6px 0;
+    }
+
+    .row .label{
+    min-width: 140px; /* keeps labels aligned nicely */
+    }
+
+    .row .val{
+    text-align: left; /* ensures values don’t drift right */
+    }
+
+    .faceLabel{
+      font-size:12px;
+      opacity:.85;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+
+    .faceValue{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+      font-size: 34px;
+      font-weight: 900;
+      line-height:1;
+      text-shadow: 0 2px 10px rgba(0,0,0,.55);
+    }
+
+    .footerline{
+      margin-top:12px;
+      font-size:13px;
+      opacity:.75;
+    }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <div class="title">Scoreboard</div>
+        <div class="sub" id="lastUpdated">Waiting for data…</div>
+      </div>
+      <div class="sub">POST JSON to <code>/api/ingest</code></div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="footerline" id="status"></div>
+  </div>
+
+<script>
+  const grid = document.getElementById("grid");
+  const lastUpdated = document.getElementById("lastUpdated");
+  const status = document.getElementById("status");
+
+  function ordinal(n){
+    const s = ["th","st","nd","rd"], v = n % 100;
+    return n + (s[(v-20)%10] || s[v] || s[0]);
+  }
+
+  function safe(obj, path, fallback){
+    try{
+      return path.split(".").reduce((a,k)=>a?.[k], obj) ?? fallback;
+    }catch(e){
+      return fallback;
+    }
+  }
+
+  function cardHTML(player, index){
+    const name = player.player_name ?? "Unknown";
+
+    const mk = safe(player, "monsters.killed", 0);
+    const mt = safe(player, "monsters.total", 0);
+
+    const sf = safe(player, "secrets.found", 0);
+    const st = safe(player, "secrets.total", 0);
+
+    const ip = safe(player, "items.picked_up", 0);
+    const it = safe(player, "items.total", 0);
+
+    const face = Number(player.face_index ?? 0);
+    const faceFile = `face_index_${String(face).padStart(2, "0")}.png`;
+    const faceUrl = `/static/faces/output/${faceFile}`;
+
+    return `
+        <div class="card">
+        <div class="leftPlate">
+            <div class="rank">${ordinal(index+1)}</div>
+            <div class="name">${name}</div>
+        </div>
+
+        <div class="midPlate">
+            <div class="row">
+            <div class="label">Monsters</div>
+            <div class="val">${mk} / ${mt}</div>
+            </div>
+            <div class="row">
+            <div class="label">Secrets</div>
+            <div class="val">${sf} / ${st}</div>
+            </div>
+            <div class="row">
+            <div class="label">Items</div>
+            <div class="val">${ip} / ${it}</div>
+            </div>
+        </div>
+
+        <div class="rightPlate">
+            <img
+            class="faceImg"
+            src="${faceUrl}"
+            alt="face ${face}"
+            loading="lazy"
+            onerror="this.onerror=null; this.style.display='none';"
+            />
+        </div>
+        </div>
+    `;
+  }
+
+  function faceUrlFromIndex(faceIndex){
+  const face = Number(faceIndex ?? 0);
+  const faceFile = `face_index_${String(face).padStart(2, "0")}.png`;
+  return `/static/faces/output/${faceFile}`;
+}
+
+function ensureCard(playerName){
+  const id = `card-${encodeURIComponent(playerName)}`;
+  let card = document.getElementById(id);
+  if(card) return card;
+
+  card = document.createElement("div");
+  card.className = "card";
+  card.id = id;
+
+  card.innerHTML = `
+    <div class="leftPlate">
+      <div class="rank" data-rank></div>
+      <div class="name" data-name></div>
+    </div>
+
+    <div class="midPlate">
+      <div class="row">
+        <div class="label">Monsters</div>
+        <div class="val" data-monsters></div>
+      </div>
+      <div class="row">
+        <div class="label">Secrets</div>
+        <div class="val" data-secrets></div>
+      </div>
+      <div class="row">
+        <div class="label">Items</div>
+        <div class="val" data-items></div>
+      </div>
+    </div>
+
+    <div class="rightPlate">
+      <img class="faceImg" data-face alt="face" />
+    </div>
+  `;
+  grid.appendChild(card);
+  return card;
+}
+
+    function updateCard(card, player, rankIndex){
+        card.querySelector("[data-rank]").textContent = ordinal(rankIndex + 1);
+        card.querySelector("[data-name]").textContent = player.player_name ?? "Unknown";
+
+        const mk = safe(player, "monsters.killed", 0);
+        const mt = safe(player, "monsters.total", 0);
+        const sf = safe(player, "secrets.found", 0);
+        const st = safe(player, "secrets.total", 0);
+        const ip = safe(player, "items.picked_up", 0);
+        const it = safe(player, "items.total", 0);
+
+        card.querySelector("[data-monsters]").textContent = `${mk} / ${mt}`;
+        card.querySelector("[data-secrets]").textContent  = `${sf} / ${st}`;
+        card.querySelector("[data-items]").textContent    = `${ip} / ${it}`;
+
+        const img = card.querySelector("[data-face]");
+        const nextSrc = faceUrlFromIndex(player.face_index);
+
+        // Only change src if it actually changed -> prevents blinking
+        if(img.getAttribute("src") !== nextSrc){
+            img.setAttribute("src", nextSrc);
+        }
+    }
+
+  async function poll(){
+    try{
+      const res = await fetch("/api/scoreboard?t=" + Date.now(), {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" }
+      });
+      const j = await res.json();
+
+      if(!j.ok){
+        status.textContent = "Server returned an error.";
+        return;
+      }
+
+      const players = j.players || [];
+      if(players.length === 0){
+        status.textContent = "No players yet. POST some JSON to /api/ingest";
+        lastUpdated.textContent = "Waiting for data…";
+        grid.innerHTML = "";
+        return;
+      }
+
+      // Render
+      // Track which cards are still present
+        const keep = new Set();
+
+        players.forEach((p, i) => {
+        const name = p.player_name ?? `player-${i}`;
+        keep.add(name);
+        const card = ensureCard(name);
+        updateCard(card, p, i);
+        });
+
+        // Remove cards for players no longer in the list
+        [...grid.querySelectorAll(".card")].forEach(card => {
+        const decoded = decodeURIComponent(card.id.replace(/^card-/, ""));
+        if(!keep.has(decoded)){
+            card.remove();
+        }
+        });
+
+      // Updated time = newest received_at among players
+      const newest = players.reduce((mx,p)=>Math.max(mx, p.received_at_unix || 0), 0);
+      if(newest){
+        lastUpdated.textContent = "Updated: " + new Date(newest*1000).toLocaleString();
+      }else{
+        lastUpdated.textContent = "Updated.";
+      }
+      status.textContent = "";
+
+    } catch (e){
+      status.textContent = "Backend unreachable. Is Flask running?";
+    }
+  }
+
+let polling = false;
+
+async function pollLoop(){
+  if(polling) return;        // prevent overlapping polls
+  polling = true;
+  try{
+    await poll();
+  } catch(e){
+    console.error("poll error:", e);
+    status.textContent = "Poll error: " + (e?.message || e);
+  } finally {
+    polling = false;
+    setTimeout(pollLoop, 500);   // schedule next run no matter what
+  }
+}
+
+pollLoop();
+</script>
+</body>
+</html>

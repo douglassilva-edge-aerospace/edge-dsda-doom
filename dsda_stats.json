@@ -1,0 +1,10 @@
+{
+  "monsters": [14, 28],
+  "secrets": [0, 3],
+  "items": [9, 32],
+  "time_taken": [0, 0, 54],
+  "health": 0,
+  "armor": 62,
+  "ammo": [12, 50],
+  "face_index": 41
+}
