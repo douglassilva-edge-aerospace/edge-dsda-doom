@@ -1,10 +1,10 @@
 {
-  "monsters": [14, 28],
+  "monsters": [6, 28],
   "secrets": [0, 3],
-  "items": [9, 32],
-  "time_taken": [0, 0, 54],
-  "health": 0,
-  "armor": 62,
-  "ammo": [12, 50],
-  "face_index": 41
+  "items": [4, 32],
+  "time_taken": [0, 0, 18],
+  "health": 80,
+  "armor": 0,
+  "ammo": [51, 200],
+  "face_index": 1
 }

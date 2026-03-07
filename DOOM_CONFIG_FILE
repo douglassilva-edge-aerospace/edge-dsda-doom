@@ -1,0 +1,9 @@
+# GAMEPLAY time in Seconds
+GAMEPLAY_TIME=20
+
+# Identifier prefix
+BOARD_PREFIX_IDENTIFIER="TE"
+LAST_ID_PLAYED='28'
+
+# Scoreboard IP
+SCORE_BOARD_IP="192.168.11.15"
