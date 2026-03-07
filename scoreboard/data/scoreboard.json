@@ -1,12 +1,13 @@
 {
   "Charlie": {
     "received_at_unix": 1772109333,
-    "player_name": "Charlie",
+    "player_name": "Charlie","player_identifier":"FE0011016",
+    
     "health": 0,
     "armor": 45,
     "face_index": 32,
     "monsters": {
-      "killed": 4,
+      "killed": 14,
       "total": 28
     },
     "secrets": {
@@ -29,12 +30,12 @@
   },
   "Mourrice": {
     "received_at_unix": 1772114274,
-    "player_name": "Mourrice",
+    "player_name": "Mourrice","player_identifier":"FE0011015",
     "health": 0,
     "armor": 62,
     "face_index": 41,
     "monsters": {
-      "killed": 14,
+      "killed": 22,
       "total": 28
     },
     "secrets": {
@@ -57,12 +58,12 @@
   },
   "Alice": {
     "received_at_unix": 1772114316,
-    "player_name": "Alice",
+    "player_name": "Alice","player_identifier":"FE0011014",
     "health": 0,
     "armor": 62,
     "face_index": 32,
     "monsters": {
-      "killed": 14,
+      "killed": 6,
       "total": 28
     },
     "secrets": {
@@ -85,12 +86,12 @@
   },
   "Joe": {
     "received_at_unix": 1772114519,
-    "player_name": "Joe",
+    "player_name": "Joe","player_identifier":"FE0011013",
     "health": 0,
     "armor": 62,
     "face_index": 12,
     "monsters": {
-      "killed": 14,
+      "killed": 5,
       "total": 28
     },
     "secrets": {
@@ -113,12 +114,12 @@
   },
   "Zed": {
     "received_at_unix": 1772115073,
-    "player_name": "Zed",
+    "player_name": "Zed","player_identifier":"FE0011012",
     "health": 0,
     "armor": 10,
     "face_index": 22,
     "monsters": {
-      "killed": 1,
+      "killed": 12,
       "total": 28
     },
     "secrets": {
@@ -141,12 +142,12 @@
   },
   "Woody": {
     "received_at_unix": 1772115405,
-    "player_name": "Woody",
+    "player_name": "Woody","player_identifier":"FE0011011",
     "health": 0,
     "armor": 10,
     "face_index": 0,
     "monsters": {
-      "killed": 1,
+      "killed": 18,
       "total": 28
     },
     "secrets": {
@@ -169,12 +170,12 @@
   },
   "Avatar": {
     "received_at_unix": 1772115445,
-    "player_name": "Avatar",
+    "player_name": "Avatar","player_identifier":"FE0011001",
     "health": 0,
     "armor": 10,
     "face_index": 22,
     "monsters": {
-      "killed": 1,
+      "killed": 20,
       "total": 28
     },
     "secrets": {

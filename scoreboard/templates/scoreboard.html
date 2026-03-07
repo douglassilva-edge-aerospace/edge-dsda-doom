@@ -36,6 +36,10 @@
     --gap: 16px;
     --text: #f3f3f3;
     --shadow: 0 10px 30px rgba(0,0,0,.35);
+    --stat-label-size: 24px;
+    --stat-value-size: 24px;
+    --stat-gap: 18px;
+    --stat-row-gap: 6px;
     }
 
     body{
@@ -97,7 +101,7 @@
     border-radius:12px;
     overflow:hidden;
     box-shadow:var(--shadow);
-    background-image: var(--bg-url);
+
     background-size: cover;
     background-position: center;
     border:1px solid rgba(255,255,255,.08);
@@ -108,8 +112,12 @@
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(90deg, rgba(0,0,0,.25), rgba(0,0,0,.10));
-      pointer-events:none;
+
+      background-image: url("/static/card_bg.png");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+
+      z-index:0;
     }
 
     /* Three overlay regions aligned to the card image:
@@ -133,7 +141,7 @@
     .midPlate{
       position:absolute;
       left: 32%;
-      top: 18%;
+      top: 15%;
       width: 44%;
       height: 64%;
       display:flex;
@@ -167,7 +175,8 @@
     }
 
     .name{
-      font-size: 14px;
+      margin-left: -26px;
+      font-size: 24px;
       opacity:.85;
       white-space:nowrap;
       overflow:hidden;
@@ -176,20 +185,21 @@
     }
 
     .row{
-    display:grid;
-    grid-template-columns: auto auto; /* no 1fr stretching */
-    justify-content: start;
-    column-gap: 18px;
-    align-items: baseline;
-    margin: 6px 0;
+  display:grid;
+  grid-template-columns: auto auto;
+  justify-content:start;
+  column-gap: var(--stat-gap);
+  align-items:baseline;
+  margin: var(--stat-row-gap) 0;
     }
 
     .row .label{
-    min-width: 140px; /* keeps labels aligned nicely */
+      font-size: var(--stat-label-size);
+      min-width: 140px;
     }
 
     .row .val{
-    text-align: left; /* ensures values don’t drift right */
+    font-size: var(--stat-value-size);
     }
 
     .faceLabel{
@@ -212,6 +222,18 @@
       margin-top:12px;
       font-size:13px;
       opacity:.75;
+    }
+
+    .card.rank-gold::before{
+  filter: sepia(1) saturate(5) hue-rotate(10deg) brightness(1.15);
+    }
+
+    .card.rank-silver::before{
+  filter: saturate(0.05) brightness(1.6) contrast(1.1);
+    }
+
+    .card.rank-bronze::before{
+  filter: sepia(1) saturate(4) hue-rotate(330deg) brightness(0.75) contrast(1.1);
     }
 
     code{
@@ -254,8 +276,23 @@
     }
   }
 
+  function computeScore(p){
+
+    const monsters = p.monsters.killed / p.monsters.total;
+    const secrets  = p.secrets.found / p.secrets.total;
+    const items    = p.items.picked_up / p.items.total;
+    const face     = p.face_index || 0;
+
+    return (
+        100 * monsters +
+        50 * secrets +
+        25 * items +
+        0.1 * face
+    );
+  }
+
   function cardHTML(player, index){
-    const name = player.player_name ?? "Unknown";
+    const name = player.player_identifier ?? "Unknown";
 
     const mk = safe(player, "monsters.killed", 0);
     const mt = safe(player, "monsters.total", 0);
@@ -317,7 +354,7 @@ function ensureCard(playerName){
   if(card) return card;
 
   card = document.createElement("div");
-  card.className = "card";
+  card.className = "card rank-default";
   card.id = id;
 
   card.innerHTML = `
@@ -350,8 +387,20 @@ function ensureCard(playerName){
 }
 
     function updateCard(card, player, rankIndex){
+        card.classList.remove("rank-gold","rank-silver","rank-bronze");
+
+        if(rankIndex === 0){
+            card.classList.add("rank-gold");
+        }
+        else if(rankIndex === 1){
+            card.classList.add("rank-silver");
+        }
+        else if(rankIndex === 2){
+            card.classList.add("rank-bronze");
+        }
+
         card.querySelector("[data-rank]").textContent = ordinal(rankIndex + 1);
-        card.querySelector("[data-name]").textContent = player.player_name ?? "Unknown";
+        card.querySelector("[data-name]").textContent = player.player_identifier ?? "Unknown";
 
         const mk = safe(player, "monsters.killed", 0);
         const mt = safe(player, "monsters.total", 0);
@@ -398,8 +447,10 @@ function ensureCard(playerName){
       // Track which cards are still present
         const keep = new Set();
 
+        players.sort((a,b) => computeScore(b) - computeScore(a));
+
         players.forEach((p, i) => {
-        const name = p.player_name ?? `player-${i}`;
+        const name = p.player_identifier ?? `player-${i}`;
         keep.add(name);
         const card = ensureCard(name);
         updateCard(card, p, i);
