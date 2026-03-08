@@ -86,14 +86,21 @@ class DoomLauncher:
                 stats = json.load(f)
             
             stats["player_name"] = player_name # Inserts the name on the json
+            aux_monsters = stats["monsters"]
+            stats["monsters"] = {"killed":aux_monsters[0],"total":aux_monsters[1]}
+            aux_secrets = stats["secrets"]
+            stats["secrets"] = {"found":aux_secrets[0],"total":aux_secrets[1]}
+            aux_items = stats["items"]
+            stats["items"] = {"picked_up":aux_items[0],"total":aux_items[1]}
             set_key(config_file, "LAST_ID_PLAYED", str(last_id_played+1))
             stats["player_identifier"] = board_prefix_identifier+str(last_id_played)
             print(stats)
             
-            # Sends UDP packet
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            message = json.dumps(stats).encode('utf-8')
-            sock.sendto(message, (scoreboard_server_ip, 5005))
+            # Sends packet
+            import requests
+            url = f"http://{scoreboard_server_ip}:5005/api/ingest"
+            response = requests.post(url, json=stats, timeout=2)
+            response.raise_for_status()  # Checks if the server returned an error
             print("Data successfully sent!")
             # BRING THE WINDOW BACK
             self.root.deiconify()
