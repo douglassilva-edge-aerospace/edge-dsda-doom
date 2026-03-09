@@ -203,14 +203,14 @@
     }
   },
   "Doug": {
-    "received_at_unix": 1772995245,
+    "received_at_unix": 1773044033,
     "player_name": "Doug",
-    "player_identifier": "TE28",
+    "player_identifier": "AU02",
     "health": 0,
     "armor": 62,
     "face_index": 41,
     "monsters": {
-      "killed": 14,
+      "killed": 16,
       "total": 28
     },
     "secrets": {

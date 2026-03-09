@@ -450,10 +450,14 @@ function ensureCard(playerName){
         players.sort((a,b) => computeScore(b) - computeScore(a));
 
         players.forEach((p, i) => {
-        const name = p.player_identifier ?? `player-${i}`;
+        const name = p.player_name ?? `player-${i}`;
         keep.add(name);
+
         const card = ensureCard(name);
         updateCard(card, p, i);
+
+        // This moves the card to the correct visual position
+        grid.appendChild(card);
         });
 
         // Remove cards for players no longer in the list
