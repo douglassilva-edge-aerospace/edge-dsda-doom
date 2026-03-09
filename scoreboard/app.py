@@ -14,6 +14,27 @@ HISTORY_PATH = DATA_DIR / "history.jsonl"        # append-only log
 from queue import Queue, Empty
 subscribers = set()
 
+def compute_score(p: dict) -> float:
+    monsters = (p.get("monsters") or {})
+    secrets = (p.get("secrets") or {})
+    items = (p.get("items") or {})
+    face = p.get("face_index", 0) or 0
+
+    monsters_total = monsters.get("total", 0) or 0
+    secrets_total = secrets.get("total", 0) or 0
+    items_total = items.get("total", 0) or 0
+
+    monsters_ratio = (monsters.get("killed", 0) / monsters_total) if monsters_total else 0
+    secrets_ratio = (secrets.get("found", 0) / secrets_total) if secrets_total else 0
+    items_ratio = (items.get("picked_up", 0) / items_total) if items_total else 0
+
+    return (
+        100 * monsters_ratio +
+         50 * secrets_ratio +
+         25 * items_ratio +
+          0.1 * face
+    )
+
 @app.get("/api/stream")
 def api_stream():
     def gen():
@@ -91,28 +112,49 @@ def api_ingest():
     if payload is None:
         return jsonify({"ok": False, "error": "Invalid or missing JSON body"}), 400
 
-    items = payload if isinstance(payload, list) else [payload]
+    name = payload.get("player_name")
+    if not name:
+        return jsonify({"ok": False, "error": "player_name is required"}), 400
+
+    stamped = {
+        "received_at_unix": int(time.time()),
+        **payload,
+    }
+
+    append_jsonl(HISTORY_PATH, stamped)
 
     board = load_scoreboard()
-    now = int(time.time())
-    updated = 0
-
-    for obj in items:
-        if not isinstance(obj, dict):
-            continue
-        name = obj.get("player_name")
-        if not name:
-            continue
-
-        stamped = {"received_at_unix": now, **obj}
-        append_jsonl(HISTORY_PATH, stamped)
-        board[name] = stamped
-        updated += 1
-
+    board[name] = stamped
     atomic_write_json(SCOREBOARD_PATH, board)
 
-    publish_event({"type": "scoreboard_updated", "player_name": name, "ts": stamped["received_at_unix"]})
-    return jsonify({"ok": True, "updated": updated})
+    players = list(board.values())
+    players.sort(key=compute_score, reverse=True)
+
+    player_identifier = stamped.get("player_identifier")
+
+    position = None
+    for idx, player in enumerate(players, start=1):
+        same_identifier = (
+            player_identifier and
+            player.get("player_identifier") == player_identifier
+        )
+        same_name = player.get("player_name") == name
+
+        if same_identifier or same_name:
+            position = idx
+            break
+
+    publish_event({
+        "type": "scoreboard_updated",
+        "player_name": name,
+        "ts": stamped["received_at_unix"]
+    })
+
+    return jsonify({
+        "ok": True,
+        "updated": 1,
+        "position": position
+    })
 
 
 if __name__ == "__main__":
