@@ -29,6 +29,38 @@ if board_prefix_identifier == "":
         print("Could not retrieve MAC address. Check interface name.")
 
 # print(last_id)
+def ordinal(n):
+    if n is None:
+        return "N/A"
+    if 10 <= (n % 100) <= 20:
+        suffix = "TH"
+    else:
+        suffix = {1: "ST", 2: "ND", 3: "RD"}.get(n % 10, "TH")
+    return f"{n}{suffix}"
+
+
+import re
+def sanitize_player_name(name: str, max_len: int = 16) -> str:
+    if not isinstance(name, str):
+        return "PLAYER"
+
+    # Trim whitespace
+    name = name.strip()
+
+    # Remove disallowed characters
+    name = re.sub(r"[^A-Za-z0-9 _-]", "", name)
+
+    # Collapse repeated spaces
+    name = re.sub(r"\s+", " ", name)
+
+    # Enforce length
+    name = name[:max_len].strip()
+
+    # Fallback if empty
+    if not name:
+        return "PLAYER"
+
+    return name
 
 # Simple Tkinter interface
 root = tk.Tk()
@@ -70,22 +102,22 @@ class DoomLauncher:
         self.root.withdraw()
 
         # Opens the game
-        processo = subprocess.Popen(["./build/dsda-doom","-complevel", "2",
+        process = subprocess.Popen(["./build/dsda-doom","-width","1600","-height","900","-complevel", "2",
                                                          "-skill", "4",
-                                                         "-warp", "01"])
+                                                         "-warp", "3 6"])
         
         # Waits for GAMEPLAY_TIME
         try:
-            processo.wait(timeout=GAMEPLAY_TIME) 
+            process.wait(timeout=GAMEPLAY_TIME) 
         except subprocess.TimeoutExpired:
-            processo.terminate() # Closes the game right after timeout
+            process.terminate() # Closes the game right after timeout
 
         # Reads doom stats file 
         try:
             with open("dsda_stats.json", "r") as f:
                 stats = json.load(f)
             
-            stats["player_name"] = player_name # Inserts the name on the json
+            stats["player_name"] = sanitize_player_name(player_name, max_len=16).upper()
             aux_monsters = stats["monsters"]
             stats["monsters"] = {"killed":aux_monsters[0],"total":aux_monsters[1]}
             aux_secrets = stats["secrets"]
@@ -101,6 +133,14 @@ class DoomLauncher:
             url = f"http://{scoreboard_server_ip}:5005/api/ingest"
             response = requests.post(url, json=stats, timeout=2)
             response.raise_for_status()  # Checks if the server returned an error
+
+            resp_json = response.json()
+            print("Server response:", resp_json)
+
+            # Add returned fields into stats so ending screen can use them
+            stats["rank_position"] = resp_json.get("position")
+            stats["updated"] = resp_json.get("updated")
+
             print("Data successfully sent!")
             # BRING THE WINDOW BACK
             self.root.deiconify()
@@ -117,14 +157,24 @@ class DoomLauncher:
 
         # 2. Load and set the new background
         # Ensure you keep a reference to the image so it isn't garbage collected
-        self.end_bg_image = Image.open("assets/ending-screen.png")
+        self.end_bg_image = Image.open("assets/ending-screen-3.png")
         self.end_bg_photo = ImageTk.PhotoImage(self.end_bg_image)
         self.canvas.create_image(0, 0, image=self.end_bg_photo, anchor="nw")
 
+
         # 3. Add Ending Screen Objects (Labels, Stats, or Buttons)
         # Example: Final Score or "Game Over" text
-        self.canvas.create_text(600, 540, text=stats["player_identifier"], 
+        self.canvas.create_text(600, 530, text=f"Player: {stats['player_identifier']}", 
                                  font=("Courier", 40, "bold"), fill="#8b0000")
+        
+            # Rank position
+        rank_text = ordinal(stats.get("rank_position"))
+        self.canvas.create_text(
+            600, 580,
+            text="  Rank: "+rank_text+" Place",
+            font=("Courier", 40, "bold"),
+            fill="#8b0000"
+        )
 
         # Example: A 'Restart' or 'Exit' button
         self.exit_btn = tk.Button(self.root, text="EXIT", font=("Courier", 20, "bold"), 

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Doom Satshow
+Comment=Run Doom Satshow
+Path=/home/easuser/DOOM
+Exec=python3 doom_satshow.py
+Icon=/home/easuser/DOOM/assets/doom_faceicon.png
+StartupWMClass=dsda-doom
+StartupNotify=true
+Terminal=false
+Categories=Game;
