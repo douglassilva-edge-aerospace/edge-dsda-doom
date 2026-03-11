@@ -93,8 +93,58 @@ class DoomLauncher:
         self.canvas.create_window(535, 620, window=self.start_btn,width=370,height=80)
 
         # Maps ENTER to same action as Start Button pressing
-        self.root.bind('<Return>', lambda event: self.championship_start())
+        self.root.bind('<Return>', lambda event: self.show_instructions())
     
+    def show_instructions(self):
+        self.canvas.delete("all")
+        self.root.unbind('<Return>')
+        self.root = root
+        self.root.title("EdgeAerospace Terminal")
+
+        # 1. Loads Background image
+        self.instruction_image = Image.open("assets/instructions-screen.png")
+        self.instruction_photo = ImageTk.PhotoImage(self.instruction_image)
+
+        # 3. Adds image to tk window background 
+        # 2. Update the Canvas size to match the NEW image exactly
+        self.canvas.config(width=self.instruction_photo.width(), height=self.instruction_photo.height())
+        self.canvas.create_image(0, 0, image=self.instruction_photo, anchor="nw")
+
+# 2. Progress Bar Settings
+        BAR_WIDTH = 1150
+        BAR_HEIGHT = 15
+        BAR_X = 570 - (BAR_WIDTH // 2) # Centering based on your button logic
+        BAR_Y = 995
+        HOLD_TIME_MS = 5000  # 5 seconds
+        INTERVAL_MS = 75     # Update every 50ms
+        
+        # Draw Bar Border
+        self.canvas.create_rectangle(BAR_X, BAR_Y, BAR_X + BAR_WIDTH, BAR_Y + BAR_HEIGHT, 
+                                     outline="#5c5e5c", width=2)
+        
+        # Create the filling part (starts at 0 width)
+        progress_fill = self.canvas.create_rectangle(BAR_X, BAR_Y, BAR_X, BAR_Y + BAR_HEIGHT, 
+                                                     fill="#17ba05", outline="")
+
+        # 3. Progress Update Function
+        self.elapsed = 0
+        def update_progress():
+            self.elapsed += INTERVAL_MS
+            current_width = (self.elapsed / HOLD_TIME_MS) * BAR_WIDTH
+            
+            # Update the coordinates of the fill rectangle
+            self.canvas.coords(progress_fill, BAR_X, BAR_Y, BAR_X + current_width, BAR_Y + BAR_HEIGHT)
+            
+            if self.elapsed < HOLD_TIME_MS:
+                # Schedule the next update
+                self.root.after(INTERVAL_MS, update_progress)
+            else:
+                # 4. Once finished, show the START button
+                self.championship_start()
+
+        update_progress()
+
+
     def championship_start(self):
         player_name = self.entry_name.get()
 
@@ -103,7 +153,7 @@ class DoomLauncher:
 
         # Opens the game
         process = subprocess.Popen(["./build/dsda-doom","-width","1600","-height","900","-complevel", "2",
-                                                         "-skill", "4",
+                                                         "-skill", "2",
                                                          "-warp", "3 6"])
         
         # Waits for GAMEPLAY_TIME
@@ -142,11 +192,12 @@ class DoomLauncher:
             stats["updated"] = resp_json.get("updated")
 
             print("Data successfully sent!")
-            # BRING THE WINDOW BACK
-            self.root.deiconify()
-            self.show_ending_screen(stats)
         except Exception as e:
             print(f"Error when processing data: {e}")
+        
+        # BRING THE WINDOW BACK
+        self.root.deiconify()
+        self.show_ending_screen(stats)
 
     def show_ending_screen(self,stats):
         # 1. Clear previous bindings and canvas
