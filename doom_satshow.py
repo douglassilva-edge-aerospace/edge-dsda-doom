@@ -89,7 +89,7 @@ class DoomLauncher:
         # 5. Adds start button
         self.start_btn = tk.Button(root, text="START", font=("Courier", 14, "bold"), 
                                     bg="#8b0000", fg="white", activebackground="#ff0000",
-                                    command=self.championship_start, padx=20,highlightthickness=0)
+                                    command=self.show_instructions, padx=20,highlightthickness=0)
         self.canvas.create_window(535, 620, window=self.start_btn,width=370,height=80)
 
         # Maps ENTER to same action as Start Button pressing
@@ -210,6 +210,9 @@ class DoomLauncher:
         # Ensure you keep a reference to the image so it isn't garbage collected
         self.end_bg_image = Image.open("assets/ending-screen-3.png")
         self.end_bg_photo = ImageTk.PhotoImage(self.end_bg_image)
+        
+        # Canvas stuff
+        self.canvas.config(width=self.end_bg_photo.width(), height=self.end_bg_photo.height())
         self.canvas.create_image(0, 0, image=self.end_bg_photo, anchor="nw")
 
 

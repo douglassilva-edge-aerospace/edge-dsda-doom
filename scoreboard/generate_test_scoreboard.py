@@ -11,7 +11,7 @@ now = int(time())
 
 board = {}
 
-for i in range(10_000):
+for i in range(10):
     monsters_total = 28
     secrets_total = 3
     items_total = 32
