@@ -337,7 +337,7 @@
             src="${faceUrl}"
             alt="face ${face}"
             loading="lazy"
-            onerror="this.onerror=null; this.style.display='none';"
+            onerror="if(!this.dataset.fallback){ this.dataset.fallback='1'; this.src='/static/faces/output/face_index_20.png'; } else { this.style.display='none'; }"
             />
         </div>
         </div>
@@ -381,7 +381,12 @@ function ensureCard(playerName){
     </div>
 
     <div class="rightPlate">
-      <img class="faceImg" data-face alt="face" />
+      <img
+          class="faceImg"
+          data-face
+          alt="face"
+          onerror="if(!this.dataset.fallback){ this.dataset.fallback='1'; this.src='/static/faces/output/face_index_20.png'; } else { this.style.display='none'; }"
+        />
     </div>
   `;
   grid.appendChild(card);
