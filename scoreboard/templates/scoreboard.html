@@ -432,9 +432,20 @@ function ensureCard(playerName){
         const img = card.querySelector("[data-face]");
         const nextSrc = faceUrlFromIndex(player.face_index);
 
+        img.style.display = ""; // unhide in case a previous load failed
+        img.onerror = function () {
+          if (!this.dataset.fallback) {
+            this.dataset.fallback = "1";
+            this.src = "/static/faces/output/face_index_20.png";
+          } else {
+            this.style.display = "none";
+          }
+        };
+
         // Only change src if it actually changed -> prevents blinking
-        if(img.getAttribute("src") !== nextSrc){
-            img.setAttribute("src", nextSrc);
+        if (img.getAttribute("src") !== nextSrc) {
+          delete img.dataset.fallback;
+          img.setAttribute("src", nextSrc);
         }
     }
 
