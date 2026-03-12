@@ -332,21 +332,17 @@
         </div>
 
         <div class="rightPlate">
-            <img
-            class="faceImg"
-            src="${faceUrl}"
-            alt="face ${face}"
-            loading="lazy"
-            onerror="if(!this.dataset.fallback){ this.dataset.fallback='1'; this.src='/static/faces/output/face_index_20.png'; } else { this.style.display='none'; }"
-            />
+            <img class="faceImg" data-face alt="face" />
         </div>
         </div>
     `;
   }
 
-  function faceUrlFromIndex(faceIndex){
+function faceUrlFromIndex(faceIndex){
+  const valid = new Set([0,1,2,10,11,12,20,21,22,30,31,32,40,41,42]);
   const face = Number(faceIndex ?? 0);
-  const faceFile = `face_index_${String(face).padStart(2, "0")}.png`;
+  const safeFace = valid.has(face) ? face : 20;
+  const faceFile = `face_index_${String(safeFace).padStart(2, "0")}.png`;
   return `/static/faces/output/${faceFile}`;
 }
 
@@ -432,20 +428,9 @@ function ensureCard(playerName){
         const img = card.querySelector("[data-face]");
         const nextSrc = faceUrlFromIndex(player.face_index);
 
-        img.style.display = ""; // unhide in case a previous load failed
-        img.onerror = function () {
-          if (!this.dataset.fallback) {
-            this.dataset.fallback = "1";
-            this.src = "/static/faces/output/face_index_20.png";
-          } else {
-            this.style.display = "none";
-          }
-        };
-
         // Only change src if it actually changed -> prevents blinking
-        if (img.getAttribute("src") !== nextSrc) {
-          delete img.dataset.fallback;
-          img.setAttribute("src", nextSrc);
+        if(img.getAttribute("src") !== nextSrc){
+            img.setAttribute("src", nextSrc);
         }
     }
 
