@@ -62,10 +62,10 @@ def get_top_10(filename):
             })
 
     # Sort by score descending
-    top_10 = sorted(players, key=lambda x: x['score'], reverse=True)[:10]
+    scoreboard_list = sorted(players, key=lambda x: x['score'], reverse=True)
 
     # Print formatted output
-    for i, p in enumerate(top_10, 1):
+    for i, p in enumerate(scoreboard_list, 1):
         print(f"{i}. {p['name']} - Monsters Killed: {p['monsters']}, "
               f"Items Pickedup: {p['items']}, Secrets Found: {p['secrets']}, "
               f"Score : {p['score']}")
