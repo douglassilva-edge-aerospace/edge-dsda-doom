@@ -115,8 +115,8 @@ class DoomLauncher:
         BAR_HEIGHT = 15
         BAR_X = 570 - (BAR_WIDTH // 2) # Centering based on your button logic
         BAR_Y = 995
-        HOLD_TIME_MS = 5000  # 5 seconds
-        INTERVAL_MS = 75     # Update every 50ms
+        HOLD_TIME_MS = 7500  # 5 seconds
+        INTERVAL_MS = 50     # Update every 50ms
         
         # Draw Bar Border
         self.canvas.create_rectangle(BAR_X, BAR_Y, BAR_X + BAR_WIDTH, BAR_Y + BAR_HEIGHT, 
