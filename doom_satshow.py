@@ -28,6 +28,10 @@ if board_prefix_identifier == "":
     except subprocess.CalledProcessError:
         print("Could not retrieve MAC address. Check interface name.")
 
+def append_local_history(entry: dict, path: str = "data/local_history.jsonl") -> None:
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, separators=(",", ":")) + "\n")
+
 # print(last_id)
 def ordinal(n):
     if n is None:
@@ -162,7 +166,8 @@ class DoomLauncher:
         except subprocess.TimeoutExpired:
             process.terminate() # Closes the game right after timeout
 
-        # Reads doom stats file 
+        # Reads doom stats file
+        stats={} 
         try:
             with open("dsda_stats.json", "r") as f:
                 stats = json.load(f)
@@ -194,6 +199,12 @@ class DoomLauncher:
             print("Data successfully sent!")
         except Exception as e:
             print(f"Error when processing data: {e}")
+        finally:
+            history_entry = {
+                "sent_from_unix": int(time.time()),
+                **stats
+            }
+            append_local_history(history_entry)
         
         # BRING THE WINDOW BACK
         self.root.deiconify()
